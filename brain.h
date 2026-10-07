@@ -44,7 +44,7 @@ typedef struct {
 void brain_init(Brain *b, int n_pairs);
 
 // Update : called by brain, not by strat
-void brain_observe(Brain *b, int pos, int value);   // a card has just flipped
+void brain_observe(Brain *b, int pos, int value);   // a card is just flipped
 void brain_remove_pair(Brain *b, int value);        // party is won
 
 // Requests
