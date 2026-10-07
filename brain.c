@@ -23,9 +23,56 @@ void brain_init(Brain *b, int n_pairs)
     b->nb_singles = 0;
     b->nb_unseen_values = b->n_pairs;
 }
-void brain_observe(Brain *b, int pos, int value);
-void brain_remove_pair(Brain *b, int value);
-bool brain_has_known_pair(const Brain *b);
+
+void brain_observe(Brain *b, int pos, int value)
+{
+    assert(b->state[pos] != POS_REMOVED);
+    if(b->state[pos] == POS_UNKNOWN)
+    {
+        b->state[pos] = POS_SEEN;
+        b->value_at[pos] = value;
+        //La retirer des positions inconnues
+        int idx  = b->index_in_unknown[pos];            
+        int last = b->unknown[b->unknown_count - 1];    
+
+        b->unknown[idx] = last;                         
+        b->index_in_unknown[last] = idx;                
+        b->unknown_count--;
+        //oui oui baguette
+        if(b->seen_count[value] == 0)
+        {
+            b->seen_pos[value][0] = pos;
+        }
+        else
+        {
+            b->seen_pos[value][1] = pos;
+        }
+        b->seen_count[value] += 1;
+        
+        if(b->seen_count[value] == 1)
+        {
+            b->nb_unseen_values -= 1;
+            b->nb_singles += 1;
+        }
+        else if(b->seen_count[value] == 2)
+        {
+            b->nb_singles -= 1;
+            b->known_pairs[b->known_pairs_count] = value;
+            b->known_pairs_count += 1;
+        }
+    }
+}
+void brain_remove_pair(Brain *b, int value)
+{
+    ;
+}
+
+
+bool brain_has_known_pair(const Brain *b)
+{
+    return b->known_pairs_count > 0;
+}
+
 bool brain_pop_known_pair(Brain *b, int *pos_a, int *pos_b);
 int  brain_find_twin(const Brain *b, int pos, int value);
 int  brain_random_unknown(const Brain *b, int exclude);
