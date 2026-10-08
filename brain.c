@@ -64,7 +64,20 @@ void brain_observe(Brain *b, int pos, int value)
 }
 void brain_remove_pair(Brain *b, int value)
 {
-    ;
+    assert(b->seen_count[value] == 2);
+    int pos_a = b->seen_pos[value][0];
+    int pos_b = b->seen_pos[value][1];
+    b->state[pos_a] = POS_REMOVED;
+    b->state[pos_b] = POS_REMOVED;
+    for (int i = 0; i < b->known_pairs_count; i++)
+    {
+        if (b->known_pairs[i] == value)
+        {
+            b->known_pairs[i] = b->known_pairs[b->known_pairs_count - 1];
+            b->known_pairs_count--;
+            break;
+        }
+    }
 }
 
 
@@ -73,7 +86,19 @@ bool brain_has_known_pair(const Brain *b)
     return b->known_pairs_count > 0;
 }
 
-bool brain_pop_known_pair(Brain *b, int *pos_a, int *pos_b);
+bool brain_pop_known_pair(Brain *b, int *pos_a, int *pos_b)
+{
+    if (b->known_pairs_count == 0)
+        return false;
+
+    b->known_pairs_count--;
+    int value = b->known_pairs[b->known_pairs_count];
+
+    *pos_a = b->seen_pos[value][0];
+    *pos_b = b->seen_pos[value][1];
+    return true;
+}
+
 int  brain_find_twin(const Brain *b, int pos, int value);
 int  brain_random_unknown(const Brain *b, int exclude);
 bool brain_game_over(const Brain *b);
