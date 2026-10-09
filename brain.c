@@ -99,6 +99,30 @@ bool brain_pop_known_pair(Brain *b, int *pos_a, int *pos_b)
     return true;
 }
 
-int  brain_find_twin(const Brain *b, int pos, int value);
-int  brain_random_unknown(const Brain *b, int exclude);
-bool brain_game_over(const Brain *b);
+int  brain_find_twin(const Brain *b, int pos, int value)
+{
+    for (int i = 0; i < 2; i++)
+    {
+        int p = b->seen_pos[value][i];
+        if (p != NO_POS && p != pos)
+            return p;
+    }
+    return NO_POS;
+}
+int  brain_random_unknown(const Brain *b, int exclude)
+{
+    int n = b->unknown_count;
+    bool excluded_is_unknown = (exclude >= 0 && exclude < b->n_cards && b->state[exclude] == POS_UNKNOWN);
+    int candidates = excluded_is_unknown ? n - 1 : n;
+    if (candidates <= 0)
+        return NO_POS;
+    int r = rand() % candidates;
+    if (excluded_is_unknown && r >= b->index_in_unknown[exclude])
+        r++;
+    return b->unknown[r];
+}
+bool brain_game_over(const Brain *b)
+{
+
+    return b->known_pairs_count == 0;
+}

@@ -2,6 +2,9 @@
 #define BRAIN_H
 
 #include <stdbool.h>
+#include <stdlib.h>
+#include <string.h>   
+#include <assert.h>   
 
 #define MAX_CARDS 64
 #define MAX_PAIRS (MAX_CARDS / 2)
