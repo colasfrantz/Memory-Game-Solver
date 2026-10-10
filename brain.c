@@ -7,6 +7,7 @@ void brain_init(Brain *b, int n_pairs)
     memset(b, 0, sizeof *b); // all of b's will be set to 0s
     b->n_pairs = n_pairs;
     b->n_cards = 2 * n_pairs;
+    b->pairs_removed = 0;
     for (int i = 0; i < b->n_cards; i++) {
         b->state[i] = POS_UNKNOWN;       
         b->value_at[i] = -1;             
@@ -67,6 +68,7 @@ void brain_remove_pair(Brain *b, int value)
     assert(b->seen_count[value] == 2);
     int pos_a = b->seen_pos[value][0];
     int pos_b = b->seen_pos[value][1];
+    assert(b->state[pos_a] != POS_REMOVED)
     b->state[pos_a] = POS_REMOVED;
     b->state[pos_b] = POS_REMOVED;
     for (int i = 0; i < b->known_pairs_count; i++)
@@ -78,6 +80,7 @@ void brain_remove_pair(Brain *b, int value)
             break;
         }
     }
+    b->pairs_removed += 1;
 }
 
 
@@ -123,6 +126,5 @@ int  brain_random_unknown(const Brain *b, int exclude)
 }
 bool brain_game_over(const Brain *b)
 {
-
-    return b->known_pairs_count == 0;
+    return b->pairs_removed == b->n_pairs;
 }

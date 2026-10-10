@@ -41,12 +41,13 @@ typedef struct {
     // counters 
     int nb_singles;                        // seen values 1 time
     int nb_unseen_values;                  // unseen values
+    int pairs_removed;
 } Brain;
 
 // Initialisation
 void brain_init(Brain *b, int n_pairs);
 
-// Update : called by brain, not by strat
+// Update : called by engine, not by strat
 void brain_observe(Brain *b, int pos, int value);   // a card is just flipped
 void brain_remove_pair(Brain *b, int value);        // party is won
 
