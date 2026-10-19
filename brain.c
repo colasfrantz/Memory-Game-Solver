@@ -68,7 +68,7 @@ void brain_remove_pair(Brain *b, int value)
     assert(b->seen_count[value] == 2);
     int pos_a = b->seen_pos[value][0];
     int pos_b = b->seen_pos[value][1];
-    assert(b->state[pos_a] != POS_REMOVED)
+    assert(b->state[pos_a] != POS_REMOVED);
     b->state[pos_a] = POS_REMOVED;
     b->state[pos_b] = POS_REMOVED;
     for (int i = 0; i < b->known_pairs_count; i++)
