@@ -2,27 +2,47 @@
 
 void board_init(Board *bd, int n_pairs, unsigned seed)
 {
-    /*
-    Vérifie que 2 * n_pairs <= BOARD_MAX_CARDS.
-    Appelle srand(seed) : une graine fixée rend la partie reproductible, y compris les choix aléatoires de brain_random_unknown, qui utilise le même rand().
-    Remplis value[i] = i / 2 + 1 : tu obtiens 1, 1, 2, 2, 3, 3...
-    Mélange avec Fisher-Yates : pour i allant de n_cards - 1 jusqu’à 1, tire j = rand() % (i + 1) et échange value[i] et value[j].
-    Mets removed[] à false et pairs_found à 0.
+    assert(n_pairs >= 1 && 2 * n_pairs <= BOARD_MAX_CARDS);
+    
+    memset(bd, 0, sizeof *bd);
+    bd->n_pairs = n_pairs;
+    bd->n_cards = 2 * n_pairs;
 
-    Attention à la boucle : j doit être tiré dans [0, i] inclus. Un tirage dans [0, i-1] donne un mélange biaisé, et ce bug ne se voit pas à l’œil nu.
-    */
-   return;
+    srand(seed); 
+    for (int i = 0; i < bd->n_cards; i++)
+        bd->value[i] = i / 2 + 1;
+
+    /* Mélange de Fisher-Yates */
+    for (int i = bd->n_cards - 1; i > 0; i--)
+    {
+        int j = rand() % (i + 1);     /* j dans [0, i] inclus */
+        int tmp = bd->value[i];
+        bd->value[i] = bd->value[j];
+        bd->value[j] = tmp;
+    }
+    return;
 }
 
 int  board_flip(const Board *bd, int pos)
 {
     /*Vérifie par assert que pos est valide et que la carte n’est pas déjà retirée, puis renvoie value[pos]. Elle est const : retourner une carte ne change pas le plateau. Le nombre de tours se compte dans le moteur, pas ici.*/
-    return -1;
+    assert(pos >= 0 && pos < bd->n_cards);
+    assert(!bd->removed[pos]);
+    return bd->value[pos];
 }            
 
 void board_remove_pair(Board *bd, int pos_a, int pos_b)
 {
     /*assert que les deux positions sont différentes, non retirées, et que value[pos_a] == value[pos_b]. Puis marque les deux removed et incrémente pairs_found. Cette fonction est le garde-fou du moteur : si le moteur valide une fausse paire, le programme s’arrête tout de suite au lieu de produire des statistiques fausses.*/
+    assert(pos_a >= 0 && pos_a < bd->n_cards);
+    assert(pos_b >= 0 && pos_b < bd->n_cards);
+    assert(pos_a != pos_b);
+    assert(!bd->removed[pos_a] && !bd->removed[pos_b]);
+    assert(bd->value[pos_a] == bd->value[pos_b]);
+
+    bd->removed[pos_a] = true;
+    bd->removed[pos_b] = true;
+    bd->pairs_found++;
 } 
 
 bool board_is_over(const Board *bd)
