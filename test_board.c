@@ -50,7 +50,7 @@ static void test_remove_and_over(void)
     for (int v = 1; v <= 2; v++) {
         int a = -1, b = -1;
         for (int p = 0; p < bd.n_cards; p++)
-            if (board_flip(&bd, p) == v && !bd.removed[p]) { if (a < 0) a = p; else b = p; }
+            if (!bd.removed[p] && board_flip(&bd, p) == v) { if (a < 0) a = p; else b = p; }
         board_remove_pair(&bd, a, b);
     }
     assert(board_is_over(&bd) && bd.pairs_found == 2);

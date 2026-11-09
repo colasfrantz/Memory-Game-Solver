@@ -1,5 +1,9 @@
 #include "board.h"
 
+#include <assert.h>
+#include <stdlib.h>
+#include <string.h>
+
 void board_init(Board *bd, int n_pairs, unsigned seed)
 {
     assert(n_pairs >= 1 && 2 * n_pairs <= BOARD_MAX_CARDS);
